@@ -4,7 +4,7 @@ from fastapi import FastAPI
 #from app.api import auth
 
 # cria a aplicação FastAPI com título e versão
-app = FastAPI(title="Projeto 1", version="1.0.0")
+app = FastAPI(title="autht-api-fast", version="1.0.0")
 
 # registra o roteador de autenticação em /auth
 #app.include_router(auth.router, prefix="/auth", tags=["auth"])
