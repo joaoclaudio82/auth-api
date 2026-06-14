@@ -5,12 +5,16 @@
 
 
 # Define os modelos Pydantic para criação e leitura de usuários, bem como para tokens de autenticação.    
-from pydantic import BaseModel, EmailStr, ConfigDict
+from pydantic import BaseModel, EmailStr, ConfigDict, Field
 
 # Define o modelo UserCreate para criação de usuários, com campos de email e senha.
 class UserCreate(BaseModel):
     email: EmailStr
-    password: str
+    password: str = Field(
+        min_length=8,
+        max_length=72,
+        description="Senha entre 8 e 72 caracteres",
+    )
 
 # Define o modelo UserRead para leitura de usuários, com campos de id, email e status de atividade. O ConfigDict é usado para permitir a criação do modelo a partir de atributos de classe.
 class UserRead(BaseModel):
