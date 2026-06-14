@@ -174,3 +174,23 @@ def authenticate(db: Session, email: str, password: str) -> User | None:
     # Se chegou aqui, email existe E senha está correta ✅
     # Retorna o usuário (será usado para gerar um JWT token)
     return user
+
+
+''' 25. Por que retornar None em vez de lançar HTTPException?
+
+No serviço, evitamos fazer isso:
+
+raise HTTPException(status_code=401, detail="Credenciais inválidas")
+
+Isso porque HTTPException pertence à camada de API.
+O serviço não deveria conhecer detalhes de HTTP.
+O serviço deve apenas dizer:
+
+autenticou
+
+ou
+
+não autenticou
+
+A rota decide qual resposta HTTP será enviada ao cliente.
+Isso é uma boa prática de arquitetura. '''
