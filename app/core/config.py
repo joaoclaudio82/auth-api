@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    database_url: str = "postgresql+psycopg2://app:app@localhost:5432/appdb"
+    database_url: str = "postgresql+psycopg2://app:app@localhost:5433/appdb"
     secret_key: str = "troque-em-producao"
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
