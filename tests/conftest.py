@@ -2,7 +2,12 @@
 # Criamos um banco de dados SQLite em memória para isolar os testes do banco de dados real.
 # A fixture client é responsável por configurar o ambiente de teste, incluindo a criação das tabelas e a substituição da dependência get_db 
 # para usar o banco de dados de teste. Após os testes, as tabelas são removidas e as dependências são limpas para garantir que cada teste seja executado em um ambiente limpo.
+import os
 
+os.environ.setdefault("DATABASE_URL", "sqlite://")
+os.environ.setdefault("SECRET_KEY", "test-secret-key-with-more-than-32-characters")
+os.environ.setdefault("ALGORITHM", "HS256")
+os.environ.setdefault("ACCESS_TOKEN_EXPIRE_MINUTES", "30")
 
 import pytest
 from fastapi.testclient import TestClient

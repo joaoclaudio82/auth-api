@@ -15,6 +15,7 @@
 # ============================================================================
 
 from sqlalchemy.orm import Session
+
 # Session: Representa uma conexão lógica com o banco de dados
 # É como uma "conversa" com o banco de dados que fica aberta durante o tempo que precisamos
 # Através dela, executamos queries, salvamos dados, e gerenciamos transações
@@ -45,7 +46,7 @@ from app.schemas.user import UserCreate
 # Exemplo: { "email": "user@example.com", "password": "senha123" }
 # PORQUÊ: Especificar exatamente quais campos o cliente deve enviar
 
-
+from sqlalchemy.exc import IntegrityError
 # ============================================================================
 # FUNÇÃO 1: Buscar usuário pelo email
 # ============================================================================
@@ -112,7 +113,13 @@ def create_user(db: Session, data: UserCreate) -> User:
     # db.commit(): CONFIRMA e salva o usuário no banco de dados
     # É como clicar em "Finalizar compra"
     # Neste ponto: INSERT INTO users (email, hashed_password) VALUES (...)
-    db.commit()
+    try:
+        db.commit()
+        db.refresh(user)  # Recarrega os dados do usuário do banco (para obter o ID gerado)
+        return user
+    except IntegrityError:
+        db.rollback()
+        raise ValueError("E-mail já cadastrado")
 
     # db.refresh(user): Recarrega os dados do usuário do banco
     # PORQUÊ: O banco gerou um ID automático que precisamos saber
