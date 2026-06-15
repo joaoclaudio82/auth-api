@@ -1,7 +1,9 @@
-#aqui definimos a configuração para os testes usando pytest. 
+#aqui definimos a configuração para os testes usando pytest.
 # Criamos um banco de dados SQLite em memória para isolar os testes do banco de dados real.
-# A fixture client é responsável por configurar o ambiente de teste, incluindo a criação das tabelas e a substituição da dependência get_db 
-# para usar o banco de dados de teste. Após os testes, as tabelas são removidas e as dependências são limpas para garantir que cada teste seja executado em um ambiente limpo.
+# A fixture client configura o ambiente de teste (criação das tabelas e substituição de get_db).
+# A fixture db_session expõe a MESMA sessão usada pela API, permitindo que o teste inspecione/altere
+# dados diretamente no banco (ex.: desativar um usuário). Após cada teste, as tabelas são removidas
+# e as dependências limpas, garantindo um ambiente isolado.
 import os
 
 os.environ.setdefault("DATABASE_URL", "sqlite://")
@@ -31,22 +33,41 @@ TestingSessionLocal = sessionmaker(
     bind=engine,
 )
 
-#aqui definimos uma fixture do pytest chamada client, que é responsável por configurar o ambiente de teste para os testes de integração.
+
 @pytest.fixture()
-def client():
+def db_session():
+    """Sessão de banco de teste (SQLite em memória).
+
+    Cria as tabelas antes do teste e as derruba depois, garantindo isolamento.
+    Esta MESMA sessão é reutilizada pela fixture client (via override de get_db),
+    então alterações feitas aqui são enxergadas pelos endpoints durante o teste.
+    """
     Base.metadata.create_all(bind=engine)
-#aqui definimos uma função override_get_db que substitui a dependência get_db para usar o banco de dados de teste.
+    db = TestingSessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+        Base.metadata.drop_all(bind=engine)
+
+
+@pytest.fixture()
+def client(db_session):
+    """TestClient do FastAPI que usa a mesma sessão da fixture db_session.
+
+    Substitui a dependência get_db para que os endpoints usem o banco de teste
+    em vez do banco real, sem alterar uma linha do código de produção.
+    """
+
     def override_get_db():
-        db = TestingSessionLocal()
         try:
-            yield db #aqui usamos yield para criar um gerador que fornece a sessão de banco de dados para os testes. O bloco try-finally garante que a sessão seja fechada corretamente após o teste, mesmo que ocorra uma exceção durante o teste.
+            yield db_session
         finally:
-            db.close()
-    #aqui substituímos a dependência get_db no aplicativo FastAPI para usar a função override_get_db, garantindo que os testes usem o banco de dados de teste em vez do banco de dados real.
+            # o fechamento/limpeza fica a cargo da fixture db_session
+            pass
+
     app.dependency_overrides[get_db] = override_get_db
 
-    yield TestClient(app)#aqui criamos um cliente de teste usando TestClient do FastAPI, que permite enviar requisições HTTP para o aplicativo durante os testes. 
-    #O yield retorna o cliente para os testes, e após os testes, as tabelas do banco de dados são removidas e as dependências são limpas para garantir que cada teste seja executado em um ambiente limpo.
+    yield TestClient(app)
 
-    Base.metadata.drop_all(bind=engine) #aqui removemos as tabelas do banco de dados de teste após os testes, garantindo que cada teste seja executado em um ambiente limpo.
-    app.dependency_overrides.clear() #aqui limpamos as dependências substituídas após os testes, garantindo que as dependências originais sejam restauradas para outros testes ou para a execução normal do aplicativo.
+    app.dependency_overrides.clear()  # restaura a dependência original após o teste
