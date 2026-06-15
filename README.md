@@ -10,7 +10,6 @@ O projeto utiliza uma arquitetura em camadas, separando responsabilidades entre 
 
 Essa separação facilita manutenção, testes, evolução do código e evita concentração de lógica nas rotas.
 
-Aqui está um **relatório pronto** para você colocar no README, em um documento do projeto ou entregar como registro da implementação.
 
 # Relatório de Implementação — Auth API com FastAPI, PostgreSQL, SQLAlchemy, Alembic e JWT
 
