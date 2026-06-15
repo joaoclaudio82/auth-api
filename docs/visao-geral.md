@@ -3,7 +3,8 @@
 > Documento de panorama. Para o detalhe linha-a-linha de cada componente, veja a pasta
 > [`componentes/`](componentes/). Para um passo a passo de como rodar do zero, veja
 > [`onboarding.md`](onboarding.md). Existe também um aprofundamento em
-> [`../ARQUITETURA.md`](../ARQUITETURA.md).
+> [`../ARQUITETURA.md`](../ARQUITETURA.md), um [guia completo](guia-completo.md) e o
+> [relatório histórico de implementação](relatorio-implementacao.md).
 
 ---
 
@@ -158,3 +159,6 @@ Cliente envia header Authorization: Bearer <JWT>
 - Para **colocar o projeto pra rodar** do zero, mesmo sem experiência: [`onboarding.md`](onboarding.md).
 - Para entender **um componente específico**: pasta [`componentes/`](componentes/).
 - Para o **aprofundamento técnico completo**: [`../ARQUITETURA.md`](../ARQUITETURA.md).
+- Para **tudo consolidado**: [`guia-completo.md`](guia-completo.md).
+- Para o **relatório histórico** (Swagger manual, troubleshooting): [`relatorio-implementacao.md`](relatorio-implementacao.md).
+- Índice geral: [`README.md`](README.md).

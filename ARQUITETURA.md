@@ -4,6 +4,8 @@
 > com foco principal na **arquitetura** utilizada.
 >
 > Stack: **FastAPI · PostgreSQL · SQLAlchemy 2.0 · Alembic · Pydantic v2 · JWT (JOSE) · bcrypt/passlib**
+>
+> Índice de documentação: [`docs/README.md`](docs/README.md)
 
 ---
 

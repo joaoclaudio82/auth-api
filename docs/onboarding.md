@@ -240,5 +240,8 @@ pytest -v
 - 🧩 **Entender cada componente:** [componentes/](componentes/) — [api](componentes/api.md) · [services](componentes/services.md) · [models](componentes/models.md) · [schemas](componentes/schemas.md) · [core](componentes/core.md) · [alembic](componentes/alembic.md) · [tests](componentes/tests.md)
 - 🐳 **Entender o Docker:** [docker-compose.md](docker-compose.md) · [dockerfile.md](dockerfile.md)
 - 📐 **Aprofundamento técnico completo:** [../ARQUITETURA.md](../ARQUITETURA.md)
+- 📚 **Documentação consolidada:** [guia-completo.md](guia-completo.md)
+- 📝 **Relatório histórico e testes manuais:** [relatorio-implementacao.md](relatorio-implementacao.md)
+- 📑 **Índice de docs:** [README.md](README.md)
 
 Bem-vindo(a) ao projeto! 🎉
