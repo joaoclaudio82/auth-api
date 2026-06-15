@@ -80,8 +80,14 @@ def register(
     #   - Recebe: sessão do BD e dados UserCreate (email + password)
     #   - Faz: criptografa a password, cria registro no BD, commit
     #   - Retorna: objeto User com id gerado pelo banco
-    return user_service.create_user(db, data)
+    try:
+        return user_service.create_user(db, data)
 
+    except ValueError as error:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=str(error),
+        )
 
 # ===== ROTA DE LOGIN (AUTENTICAÇÃO) =====
 # Este endpoint autentica o usuário e retorna um token JWT
