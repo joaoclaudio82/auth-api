@@ -56,11 +56,16 @@ def get_current_user(
     # Busca o usuário no banco pelo email obtido do token.
     user = user_service.get_by_email(db, email)
 
-    if not user.is_active:
-        # Se o token era válido, mas o usuário não existe mais, o acesso também é negado.
+    if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Usuário não encontrado",
+        )
+
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Usuário inativo",
         )
 
     return user
