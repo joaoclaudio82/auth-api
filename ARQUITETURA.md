@@ -59,7 +59,7 @@ das rotas, cada tipo de trabalho mora em uma camada própria. Isso é conhecido 
                                  │ SQL via engine
                                  ▼
 ┌──────────────────────────────────────────────────────────────────────┐
-│  BANCO DE DADOS — PostgreSQL (rodando em Docker, porta 5433)          │
+│  BANCO DE DADOS — PostgreSQL (rodando em Docker, porta 5434)          │
 └──────────────────────────────────────────────────────────────────────┘
 
    Camadas de apoio (transversais, usadas por todas as outras):
@@ -312,15 +312,14 @@ Aqui aparece um dos padrões mais elegantes do FastAPI: **dependência como guar
 ### ④ `app/core/config.py` — Configuração centralizada
 
 ```python
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
-    database_url: str = "postgresql+psycopg2://app:app@localhost:5433/appdb"
-    secret_key: str = "troque-em-producao"
-    algorithm: str = "HS256"
-    access_token_expire_minutes: int = 30
-    class Config:
-        env_file = ".env"
+    database_url: str                          # obrigatória (sem valor-padrão)
+    secret_key: str                            # obrigatória (sem valor-padrão)
+    algorithm: str = "HS256"                   # tem valor-padrão
+    access_token_expire_minutes: int = 30      # tem valor-padrão
+    model_config = SettingsConfigDict(env_file=".env")
 
 settings = Settings()
 ```
@@ -328,16 +327,23 @@ settings = Settings()
 **Padrão de configuração via objeto único (`settings`).** Vantagens:
 
 - Os valores vêm do arquivo **`.env`** (graças a `pydantic-settings` + `env_file`).
-- Há **valores-padrão** embutidos, então o app sobe mesmo sem `.env` em dev.
 - O resto do código importa um único `settings` e lê `settings.secret_key`, etc. — sem
   `os.getenv` espalhado pelo projeto.
 
-| Variável | Para que serve |
-|----------|----------------|
-| `database_url` | String de conexão com o PostgreSQL (driver `psycopg2`, porta `5433`) |
-| `secret_key` | Chave secreta que **assina** os JWT (trocar em produção!) |
-| `algorithm` | Algoritmo de assinatura do JWT — `HS256` (HMAC + SHA-256) |
-| `access_token_expire_minutes` | Validade do token, em minutos (30) |
+> ⚠️ **`database_url` e `secret_key` são obrigatórias** — não têm valor-padrão. Como o
+> `settings = Settings()` roda no momento do import, se essas variáveis não estiverem no
+> `.env` (ou no ambiente) a aplicação **nem sobe**: o Pydantic lança um erro de validação
+> na hora. Já `algorithm` e `access_token_expire_minutes` têm default e podem ser omitidas.
+
+> 🧩 **Sintaxe Pydantic v2:** a configuração usa `model_config = SettingsConfigDict(...)`
+> (padrão do Pydantic v2), e não a antiga `class Config:` (Pydantic v1).
+
+| Variável | Para que serve | Default? |
+|----------|----------------|----------|
+| `database_url` | String de conexão com o PostgreSQL (driver `psycopg2`, porta `5434`) | ❌ obrigatória |
+| `secret_key` | Chave secreta que **assina** os JWT (trocar em produção!) | ❌ obrigatória |
+| `algorithm` | Algoritmo de assinatura do JWT — `HS256` (HMAC + SHA-256) | ✅ `HS256` |
+| `access_token_expire_minutes` | Validade do token, em minutos | ✅ `30` |
 
 > ⚠️ **Segurança:** `secret_key` e a senha do banco **não** deveriam ir para o Git em
 > produção. O `.env` resolve isso mantendo segredos fora do código-fonte.
@@ -643,8 +649,8 @@ Cliente recebe 200 { id, email, is_active }   (UserRead, sem hash)
 ## 9. Como rodar (visão rápida)
 
 ```bash
-# 1) Subir o PostgreSQL em Docker (porta 5433 publicada!)
-docker run -d --name pg-auth -p 5433:5432 \
+# 1) Subir o PostgreSQL em Docker (porta 5434 publicada!)
+docker run -d --name pg-auth -p 5434:5432 \
   -e POSTGRES_USER=app -e POSTGRES_PASSWORD=app -e POSTGRES_DB=appdb postgres
 
 # 2) Instalar dependências
@@ -661,7 +667,7 @@ uvicorn app.main:app --reload
 ```
 
 > ⚠️ Erros comuns já documentados no README: porta do container não publicada
-> (`connection refused on port 5433` → use `-p 5433:5432`), tabela inexistente
+> (`connection refused on port 5434` → use `-p 5434:5432`), tabela inexistente
 > (`relation "users" does not exist` → rode `alembic upgrade head`) e senha do banco
 > divergente (`password authentication failed` → confira a `DATABASE_URL`).
 

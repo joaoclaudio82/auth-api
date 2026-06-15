@@ -1,0 +1,37 @@
+services:
+  db:
+    image: postgres:16
+    container_name: auth-api-db
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: appdb
+    ports:
+      - "5434:5432"
+    volumes:
+      - auth_api_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d appdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: .
+    container_name: auth-api
+    environment:
+      DATABASE_URL: postgresql+psycopg2://app:app@db:5432/appdb
+      SECRET_KEY: troque-em-producao
+      ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 30
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000"
+
+volumes:
+  auth_api_pgdata:

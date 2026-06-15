@@ -275,10 +275,10 @@ Foi configurada a conexão com PostgreSQL usando SQLAlchemy.
 A aplicação passou a utilizar uma `DATABASE_URL` no seguinte formato:
 
 ```text
-postgresql+psycopg2://app:app@localhost:5433/appdb
+postgresql+psycopg2://app:app@localhost:5434/appdb
 ```
 
-O PostgreSQL foi executado via Docker, com usuário `app`, senha `app`, banco `appdb` e porta local `5433`.
+O PostgreSQL foi executado via Docker, com usuário `app`, senha `app`, banco `appdb` e porta local `5434`.
 
 ---
 
@@ -549,7 +549,7 @@ Ela retorna os dados do usuário autenticado:
 
 O banco foi executado em container Docker.
 
-A aplicação acessa o banco pela porta local `5433`.
+A aplicação acessa o banco pela porta local `5434`.
 
 Foi necessário corrigir a publicação da porta do container para que o FastAPI, rodando fora do Docker, conseguisse acessar o PostgreSQL.
 
@@ -777,7 +777,7 @@ Foi ajustada a configuração do banco e recriado o container PostgreSQL com as 
 Erro encontrado:
 
 ```text
-connection refused on port 5433
+connection refused on port 5434
 ```
 
 Causa:
@@ -789,13 +789,13 @@ Solução:
 O container foi recriado com:
 
 ```bash
--p 5433:5432
+-p 5434:5432
 ```
 
 Assim, a aplicação passou a acessar o PostgreSQL em:
 
 ```text
-localhost:5433
+localhost:5434
 ```
 
 ---

@@ -124,10 +124,7 @@ def create_user(db: Session, data: UserCreate) -> User:
     # db.refresh(user): Recarrega os dados do usuário do banco
     # PORQUÊ: O banco gerou um ID automático que precisamos saber
     # Agora user.id tem o ID gerado pelo banco
-    db.refresh(user)
-
     # Retorna o usuário completo (com ID, email, etc.)
-    return user
 
 
 # ============================================================================
